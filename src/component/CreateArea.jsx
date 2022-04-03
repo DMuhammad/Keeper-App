@@ -1,10 +1,15 @@
 import React, {useState} from "react";
+import AddIcon from '@mui/icons-material/Add';
+import Fab from '@mui/material/Fab';
+import Zoom from '@mui/material/Zoom';
 
 function CreateArea(props){
     const [note, setNote] = useState({
         title: "",
         content: ""
     });
+
+    const [isShow, setIsShow] = useState(false);
     
     function handleChange(event){
         const {name, value} = event.target;
@@ -17,8 +22,8 @@ function CreateArea(props){
         })
     }
 
-    function handleSubmit(event){
-        event.preventDefault();
+    function handleClick(event){
+        props.onAdd(note);
 
         setNote(() => {
             return {
@@ -26,15 +31,23 @@ function CreateArea(props){
                 content:""
             }
         });
+
+        event.preventDefault();
     }
 
     return <div>
-        <form onSubmit={handleSubmit}>
-            <input name="title" placeholder="Title" onChange={handleChange} value={note.title} />
-            <textarea name="content" placeholder="Take a note..." rows={3} onChange={handleChange} value={note.content} />
-            <button onClick={() => {
-                props.onAdd(note)
-            }}>Add</button>
+        <form className="create-note">
+            {isShow && <input name="title" placeholder="Title" onChange={handleChange} value={note.title} hidden={!isShow} /> }
+            <textarea onClick={() => {
+                setIsShow((prevValue) => {
+                    return !prevValue
+                })
+            }} name="content" placeholder="Take a note..." rows={isShow ? 3 : 1} onChange={handleChange} value={note.content} />
+            <Zoom in={isShow}>
+                <Fab onClick={handleClick}>
+                    <AddIcon />
+                </Fab>
+            </Zoom>
         </form>
     </div>
 }
